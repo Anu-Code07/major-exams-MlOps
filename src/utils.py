@@ -6,13 +6,14 @@ import pandas as pd
 from sklearn.datasets import fetch_california_housing
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, mean_squared_error
+from sklearn.preprocessing import StandardScaler, PolynomialFeatures
 import joblib
 import os
 
 
 def load_california_housing_data():
     """
-    Load California Housing dataset from sklearn.
+    Load California Housing dataset from sklearn with preprocessing.
     
     Returns:
         tuple: (X_train, X_test, y_train, y_test) - Training and test data
@@ -27,7 +28,17 @@ def load_california_housing_data():
         X, y, test_size=0.2, random_state=42
     )
     
-    return X_train, X_test, y_train, y_test
+    # Apply feature scaling to improve model performance
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
+    
+    # Add polynomial features to capture non-linear relationships
+    poly = PolynomialFeatures(degree=2, include_bias=False)
+    X_train_poly = poly.fit_transform(X_train_scaled)
+    X_test_poly = poly.transform(X_test_scaled)
+    
+    return X_train_poly, X_test_poly, y_train, y_test
 
 
 def evaluate_model(model, X_test, y_test):

@@ -7,7 +7,7 @@ import os
 from utils import load_model, evaluate_model, load_california_housing_data
 
 
-def quantize_parameters(coef, intercept, scale_factor=1000):
+def quantize_parameters(coef, intercept, scale_factor=10000):
     """
     Manually quantize model parameters to 8-bit unsigned integers.
     
@@ -19,11 +19,15 @@ def quantize_parameters(coef, intercept, scale_factor=1000):
     Returns:
         tuple: (quantized_coef, quantized_intercept, scale_factor)
     """
-    # Quantize coefficients
-    quantized_coef = np.round(coef * scale_factor).astype(np.uint8)
+    # Quantize coefficients with clipping to prevent overflow
+    coef_scaled = coef * scale_factor
+    coef_clipped = np.clip(coef_scaled, 0, 255)
+    quantized_coef = np.round(coef_clipped).astype(np.uint8)
     
     # Quantize intercept
-    quantized_intercept = np.round(intercept * scale_factor).astype(np.uint8)
+    intercept_scaled = intercept * scale_factor
+    intercept_clipped = np.clip(intercept_scaled, 0, 255)
+    quantized_intercept = np.round(intercept_clipped).astype(np.uint8)
     
     return quantized_coef, quantized_intercept, scale_factor
 
@@ -57,9 +61,9 @@ def create_quantized_model(original_model, quantized_coef, quantized_intercept, 
         scale_factor: Scaling factor
         
     Returns:
-        LinearRegression: Model with quantized parameters
+        Ridge: Model with quantized parameters
     """
-    from sklearn.linear_model import LinearRegression
+    from sklearn.linear_model import Ridge
     
     # Dequantize parameters
     dequantized_coef, dequantized_intercept = dequantize_parameters(
@@ -67,7 +71,7 @@ def create_quantized_model(original_model, quantized_coef, quantized_intercept, 
     )
     
     # Create new model with dequantized parameters
-    quantized_model = LinearRegression()
+    quantized_model = Ridge(alpha=original_model.alpha)
     quantized_model.coef_ = dequantized_coef
     quantized_model.intercept_ = dequantized_intercept
     
@@ -97,14 +101,14 @@ def quantize_model():
     joblib.dump(unquantized_params, "models/unquant_params.joblib")
     print("Unquantized parameters saved!")
     
-    # Quantize parameters
+    # Quantize parameters with better scaling
     print("\nQuantizing parameters...")
-    scale_factor = 1000  # Adjust based on your data range
+    scale_factor = 10000  # Increased scale factor for better precision
     quantized_coef, quantized_intercept, scale_factor = quantize_parameters(
         coef, intercept, scale_factor
     )
     
-    print(f"Quantized coefficients: {quantized_coef}")
+    print(f"Quantized coefficients range: [{quantized_coef.min()}, {quantized_coef.max()}]")
     print(f"Quantized intercept: {quantized_intercept}")
     print(f"Scale factor: {scale_factor}")
     

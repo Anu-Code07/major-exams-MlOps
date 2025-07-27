@@ -1,7 +1,7 @@
 """
-Training script for Linear Regression on California Housing dataset.
+Training script for Ridge Regression on California Housing dataset.
 """
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import Ridge
 from utils import (
     load_california_housing_data,
     save_model,
@@ -11,7 +11,7 @@ from utils import (
 
 def train_model():
     """
-    Train Linear Regression model on California Housing dataset.
+    Train Ridge Regression model on California Housing dataset.
     
     Returns:
         tuple: (model, X_test, y_test) - Trained model and test data
@@ -22,9 +22,9 @@ def train_model():
     print(f"Training data shape: {X_train.shape}")
     print(f"Test data shape: {X_test.shape}")
     
-    # Initialize and train the model
-    print("\nTraining Linear Regression model...")
-    model = LinearRegression()
+    # Initialize and train the model with regularization
+    print("\nTraining Ridge Regression model...")
+    model = Ridge(alpha=1.0, random_state=42)
     model.fit(X_train, y_train)
     
     # Print model information and performance

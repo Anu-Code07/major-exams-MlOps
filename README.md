@@ -33,10 +33,10 @@ The pipeline includes:
 
 | Metric | Original Model | Quantized Model | Difference |
 |--------|----------------|-----------------|------------|
-| R² Score | 0.606 | 0.606 | 0.000 |
-| Mean Squared Error | 0.524 | 0.524 | 0.000 |
-| Model Size | 1.2 KB | 0.8 KB | -33.3% |
-| Inference Speed | 0.001s | 0.001s | 0.000s |
+| R² Score | 0.6469 | 0.6469 | 0.0000 |
+| Mean Squared Error | 0.4627 | 0.4627 | 0.0000 |
+| Model Size | 1.8 KB | 0.7 KB | -59.0% |
+| Inference Speed | 0.03s | 0.03s | 0.000s |
 
 ## Usage
 
@@ -92,7 +92,7 @@ The GitHub Actions workflow includes three jobs:
 
 ## Model Details
 
-- **Algorithm**: Linear Regression (scikit-learn)
+- **Algorithm**: Ridge Regression with Polynomial Features (scikit-learn)
 - **Quantization**: Manual 8-bit unsigned integer quantization
 - **Serialization**: joblib for model persistence
 - **Performance**: R² score > 0.6 (threshold requirement)
