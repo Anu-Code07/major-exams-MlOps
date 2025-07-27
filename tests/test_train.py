@@ -5,7 +5,7 @@ import pytest
 import numpy as np
 import os
 import sys
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import Ridge
 from sklearn.datasets import fetch_california_housing
 
 # Add src directory to path for imports
@@ -46,8 +46,8 @@ class TestDataLoading:
         assert len(X_train.shape) == 2
         assert len(y_train.shape) == 1
         
-        # Verify we have the expected number of features (8 for California Housing)
-        assert X_train.shape[1] == 8
+        # With polynomial features, we should have more than 8 features
+        assert X_train.shape[1] > 8
         
         # Check that test size is approximately 20%
         total_samples = X_train.shape[0] + X_test.shape[0]
@@ -58,16 +58,16 @@ class TestDataLoading:
 class TestModelCreation:
     """Test model creation and training."""
     
-    def test_linear_regression_creation(self):
-        """Test that LinearRegression model can be created."""
-        model = LinearRegression()
-        assert isinstance(model, LinearRegression)
+    def test_ridge_regression_creation(self):
+        """Test that Ridge model can be created."""
+        model = Ridge(alpha=1.0, random_state=42)
+        assert isinstance(model, Ridge)
     
     def test_model_training(self):
         """Test that model can be trained on the data."""
         X_train, X_test, y_train, y_test = load_california_housing_data()
         
-        model = LinearRegression()
+        model = Ridge(alpha=1.0, random_state=42)
         model.fit(X_train, y_train)
         
         # Check that model has been trained
@@ -86,7 +86,7 @@ class TestModelCreation:
         """Test that trained model can make predictions."""
         X_train, X_test, y_train, y_test = load_california_housing_data()
         
-        model = LinearRegression()
+        model = Ridge(alpha=1.0, random_state=42)
         model.fit(X_train, y_train)
         
         predictions = model.predict(X_test)
@@ -108,7 +108,7 @@ class TestModelEvaluation:
         """Test model evaluation returns correct metrics."""
         X_train, X_test, y_train, y_test = load_california_housing_data()
         
-        model = LinearRegression()
+        model = Ridge(alpha=1.0, random_state=42)
         model.fit(X_train, y_train)
         
         metrics = evaluate_model(model, X_test, y_test)
@@ -131,7 +131,7 @@ class TestModelEvaluation:
         """Test that R² score meets minimum threshold requirement."""
         X_train, X_test, y_train, y_test = load_california_housing_data()
         
-        model = LinearRegression()
+        model = Ridge(alpha=1.0, random_state=42)
         model.fit(X_train, y_train)
         
         metrics = evaluate_model(model, X_test, y_test)
@@ -150,7 +150,7 @@ class TestModelPersistence:
         X_train, X_test, y_train, y_test = load_california_housing_data()
         
         # Train a model
-        model = LinearRegression()
+        model = Ridge(alpha=1.0, random_state=42)
         model.fit(X_train, y_train)
         
         # Save model
@@ -164,7 +164,7 @@ class TestModelPersistence:
         loaded_model = load_model(str(model_path))
         
         # Check that loaded model is the same type
-        assert isinstance(loaded_model, LinearRegression)
+        assert isinstance(loaded_model, Ridge)
         
         # Check that coefficients are the same
         np.testing.assert_array_almost_equal(model.coef_, loaded_model.coef_)
