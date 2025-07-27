@@ -13,8 +13,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy source code
 COPY src/ ./src/
 
-# Create models directory
-RUN mkdir -p models
+# Copy models directory (will be populated by GitHub Actions artifacts)
+COPY models/ ./models/
 
 # Set Python path
 ENV PYTHONPATH=/app/src
