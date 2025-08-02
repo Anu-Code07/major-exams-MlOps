@@ -109,4 +109,4 @@ The GitHub Actions workflow includes three jobs:
 
 ## License
 
-This project is created for educational purposes as part of the MLOps course assignment. 
+This project is my major exam for ml ops
